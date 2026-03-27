@@ -1538,5 +1538,309 @@
       );
       reveals.forEach((el) => observer.observe(el));
     </script>
+
+    <!-- UX ENHANCEMENTS: CSS -->
+    <style>
+      #back-to-top {
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+        width: 48px;
+        height: 48px;
+        background: var(--surface2);
+        border: 1px solid var(--border-bright);
+        color: var(--text);
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+      }
+      #back-to-top.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #back-to-top:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      #chat-toggle {
+        position: fixed;
+        bottom: 32px;
+        right: 96px;
+        height: 48px;
+        padding: 0 20px;
+        background: var(--surface2);
+        color: var(--text);
+        border: 1px solid var(--border-bright);
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1000;
+        transition: all 0.2s;
+      }
+      #chat-toggle:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      #chat-widget {
+        position: fixed;
+        bottom: 96px;
+        right: 32px;
+        width: 360px;
+        background: rgba(10, 10, 10, 0.95);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border-bright);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(20px);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      }
+      #chat-widget.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .chat-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+      }
+      .chat-close {
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 16px;
+      }
+      .chat-close:hover {
+        color: var(--text);
+      }
+      .chat-body {
+        height: 320px;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        font-size: 14px;
+      }
+      .chat-msg {
+        max-width: 85%;
+        padding: 12px 16px;
+        line-height: 1.5;
+      }
+      .chat-msg.bot {
+        background: var(--surface2);
+        align-self: flex-start;
+        color: rgba(242, 242, 240, 0.85);
+        border-left: 2px solid var(--accent);
+      }
+      .chat-msg.user {
+        background: var(--accent-dim);
+        align-self: flex-end;
+        color: var(--text);
+        border-right: 2px solid var(--accent);
+      }
+      .chat-input-area {
+        display: flex;
+        border-top: 1px solid var(--border);
+        padding: 12px;
+      }
+      .chat-input-area input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 14px;
+        padding: 8px;
+        outline: none;
+      }
+      .chat-input-area input::placeholder {
+        color: var(--muted);
+      }
+      .chat-btn {
+        background: transparent;
+        border: none;
+        color: var(--accent);
+        cursor: pointer;
+        font-family: var(--mono);
+        text-transform: uppercase;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        padding: 0 12px;
+      }
+      .chat-btn:hover {
+        color: var(--text);
+      }
+
+      @media (max-width: 768px) {
+        #chat-widget {
+          width: calc(100% - 64px);
+          right: 32px;
+          bottom: 96px;
+        }
+      }
+    </style>
+
+    <!-- UX ENHANCEMENTS: HTML -->
+    <button id="back-to-top" aria-label="Back to top">↑</button>
+    <button id="chat-toggle" aria-label="Open algorithmic assistant">💬 Ask Assistant</button>
+
+    <div id="chat-widget" aria-hidden="true">
+      <div class="chat-header">
+        <span>Garth-Bot (Deterministic)</span>
+        <span class="chat-close" id="chat-close">✕</span>
+      </div>
+      <div class="chat-body" id="chat-body">
+        <div class="chat-msg bot">
+          Hello! I'm an algorithmic assistant mapping Garth's contextual history. Ask me about his
+          <strong>experience</strong>, <strong>skills</strong>, <strong>projects</strong>, or his
+          deep <strong>OpenAI</strong> alignment.
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input
+          type="text"
+          id="chat-input"
+          placeholder="Ask a question..."
+          aria-label="Chatbot input terminal"
+        />
+        <button class="chat-btn" id="chat-send">Send</button>
+      </div>
+    </div>
+
+    <!-- UX ENHANCEMENTS: JS -->
+    <script>
+      // Back to Top Logic
+      const backToTop = document.getElementById('back-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 600) {
+          backToTop.classList.add('visible');
+        } else {
+          backToTop.classList.remove('visible');
+        }
+      });
+      backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Algorithmic Chatbot Logic
+      const chatToggle = document.getElementById('chat-toggle');
+      const chatWidget = document.getElementById('chat-widget');
+      const chatClose = document.getElementById('chat-close');
+      const chatBody = document.getElementById('chat-body');
+      const chatInput = document.getElementById('chat-input');
+      const chatSend = document.getElementById('chat-send');
+
+      chatToggle.addEventListener('click', () => {
+        chatWidget.classList.add('open');
+        chatWidget.setAttribute('aria-hidden', 'false');
+        chatInput.focus();
+      });
+
+      chatClose.addEventListener('click', () => {
+        chatWidget.classList.remove('open');
+        chatWidget.setAttribute('aria-hidden', 'true');
+      });
+
+      const knowledge = {
+        experience:
+          'Garth has over 10 years of experience translating pedagogical goals into production systems. He served as a Business Systems Analyst mapping Docebo for 10,000+ users at Entrust, an LMS Admin at Medidata (achieving zero-downtime overhauls), and coordinated critical training for 25,000+ clinicians during an Epic go-live at Montefiore.',
+        skills:
+          'His core capabilities sit at the intersection of AI, Product, and Learning Science: TypeScript, React, Next.js, Python, and FastAPI for backend development, natively integrated with enterprise LMS architecture (Docebo, Workday) and learning data models (xAPI, SCORM).',
+        projects:
+          "His proprietary architectures directly reflect the OpenAI mandate: 'Connex' is an enterprise API integration control plane. 'Mimir²' is an AI memory continuity backbone mapping 40+ repositories into contextual state. 'Curriculum Builder' is an AI-assisted instructional design suite.",
+        openai:
+          "Garth built this custom platform specifically for the Learning Systems Engineer role. His experience perfectly mirrors the requirement to 'build AI-native learning infrastructure' and 'design data systems for insights'—skills he wielded across major enterprises to empower educators directly.",
+        resume:
+          "You can download his official, tailored DOCX resume directly by clicking the 'Download Resume' button in the Hero section, or down below in the Contact Footer.",
+        default:
+          "I process purely deterministic logic. I can answer detailed questions regarding Garth's 'experience', 'skills', 'projects', 'resume', or specifically about 'Connex' or his 'OpenAI' alignment.",
+      };
+
+      function processQuery(query) {
+        const q = query.toLowerCase();
+        if (
+          q.includes('experience') ||
+          q.includes('work') ||
+          q.includes('background') ||
+          q.includes('job') ||
+          q.includes('career')
+        )
+          return knowledge.experience;
+        if (
+          q.includes('skill') ||
+          q.includes('tech') ||
+          q.includes('stack') ||
+          q.includes('code') ||
+          q.includes('language')
+        )
+          return knowledge.skills;
+        if (
+          q.includes('project') ||
+          q.includes('build') ||
+          q.includes('portfolio') ||
+          q.includes('system') ||
+          q.includes('mimir') ||
+          q.includes('connex') ||
+          q.includes('pipeline')
+        )
+          return knowledge.projects;
+        if (q.includes('openai') || q.includes('fit') || q.includes('why') || q.includes('role'))
+          return knowledge.openai;
+        if (q.includes('resume') || q.includes('cv') || q.includes('download'))
+          return knowledge.resume;
+        return knowledge.default;
+      }
+
+      function appendMessage(text, sender) {
+        const msg = document.createElement('div');
+        msg.className = 'chat-msg ' + sender;
+        msg.innerHTML = text;
+        chatBody.appendChild(msg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      function handleSend() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        appendMessage(text, 'user');
+        chatInput.value = '';
+
+        // Algorithmic delay to simulate parsing
+        setTimeout(() => {
+          appendMessage(processQuery(text), 'bot');
+        }, 500);
+      }
+
+      chatSend.addEventListener('click', handleSend);
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSend();
+      });
+    </script>
   </body>
 </html>
