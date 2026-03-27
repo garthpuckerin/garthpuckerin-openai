@@ -1697,11 +1697,103 @@
         color: var(--text);
       }
 
+      /* ── RESPONSIVE OPTIMIZATION (TABLET & MOBILE) ── */
+      @media (max-width: 1024px) {
+        .hero {
+          grid-template-columns: 1fr;
+          min-height: auto;
+        }
+        .hero-left {
+          padding: 120px 40px 60px 40px;
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .hero-right {
+          padding: 60px 40px 80px 40px;
+        }
+        .section-inner,
+        .contact-inner {
+          padding: 80px 40px;
+        }
+        .plan-grid,
+        .systems-grid,
+        .alignment-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .philosophy-block {
+          gap: 40px;
+        }
+        .contact-inner {
+          grid-template-columns: 1fr;
+        }
+      }
+
       @media (max-width: 768px) {
+        header {
+          padding: 16px 20px;
+        }
+        .header-nav {
+          display: none;
+        }
+        .hero-left {
+          padding: 100px 20px 40px 20px;
+        }
+        .hero-right {
+          padding: 40px 20px 60px 20px;
+        }
+        .section-inner,
+        .contact-inner {
+          padding: 60px 20px;
+        }
+        .plan-grid,
+        .systems-grid,
+        .alignment-grid {
+          grid-template-columns: 1fr;
+        }
+        .philosophy-block {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .contact-inner {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .cta-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .btn-primary,
+        .btn-ghost {
+          width: 100%;
+          justify-content: center;
+        }
+        .model-stats {
+          grid-template-columns: 1fr;
+        }
+        .timeline {
+          padding-left: 20px;
+        }
+        .timeline-item::before {
+          left: -24px;
+        }
+        footer {
+          flex-direction: column;
+          padding: 32px 20px;
+          gap: 16px;
+          text-align: center;
+        }
         #chat-widget {
-          width: calc(100% - 64px);
-          right: 32px;
+          width: calc(100% - 32px);
+          right: 16px;
           bottom: 96px;
+        }
+        #chat-toggle {
+          right: 80px;
+          bottom: 24px;
+        }
+        #back-to-top {
+          right: 16px;
+          bottom: 24px;
         }
       }
     </style>
