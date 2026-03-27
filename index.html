@@ -1,0 +1,1430 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garth Puckerin — Learning Systems Engineer · OpenAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --surface2: #1a1a1a;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-bright: rgba(255, 255, 255, 0.15);
+        --text: #f2f2f0;
+        --muted: rgba(242, 242, 240, 0.45);
+        --dim: rgba(242, 242, 240, 0.25);
+        --accent: #10a37f;
+        --accent-dim: rgba(16, 163, 127, 0.15);
+        --accent-glow: rgba(16, 163, 127, 0.08);
+        --warn: #f5a623;
+        --mono: 'IBM Plex Mono', monospace;
+        --serif: 'Instrument Serif', serif;
+        --sans: 'Geist', sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* ── NOISE OVERLAY ── */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 999;
+        opacity: 0.4;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 16px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
+        background: rgba(10, 10, 10, 0.85);
+        backdrop-filter: blur(20px);
+      }
+
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .openai-mark {
+        width: 28px;
+        height: 28px;
+        fill: var(--text);
+        opacity: 0.9;
+      }
+
+      .header-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      .header-nav {
+        display: flex;
+        gap: 32px;
+      }
+
+      .header-nav a {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .header-nav a:hover {
+        color: var(--accent);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding-top: 61px;
+      }
+
+      .hero-left {
+        padding: 80px 60px 80px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-right: 1px solid var(--border);
+      }
+
+      .hero-eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hero-eyebrow::before {
+        content: '';
+        display: block;
+        width: 24px;
+        height: 1px;
+        background: var(--accent);
+      }
+
+      .hero-name {
+        font-family: var(--serif);
+        font-size: clamp(48px, 5vw, 72px);
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+        margin-bottom: 12px;
+      }
+
+      .hero-name em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .hero-role {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+        margin-bottom: 40px;
+      }
+
+      .hero-statement {
+        font-size: 16px;
+        line-height: 1.7;
+        color: rgba(242, 242, 240, 0.7);
+        max-width: 480px;
+        margin-bottom: 48px;
+      }
+
+      .hero-statement strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .cta-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: var(--accent);
+        color: #fff;
+        text-decoration: none;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-primary:hover {
+        background: #0d8f6e;
+        transform: translateY(-1px);
+      }
+
+      .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border: 1px solid var(--border-bright);
+        color: var(--muted);
+        text-decoration: none;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        transition: all 0.2s;
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* ── HERO RIGHT: LEARNER MODEL ── */
+      .hero-right {
+        padding: 80px 80px 80px 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0;
+      }
+
+      .model-header {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dim);
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .model-header span {
+        color: var(--accent);
+      }
+
+      .model-title {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .competency-block {
+        margin-bottom: 20px;
+      }
+
+      .competency-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .competency-label span {
+        color: var(--accent);
+        font-size: 10px;
+      }
+
+      .competency-bar {
+        height: 3px;
+        background: var(--surface2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .competency-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--accent);
+        transform-origin: left;
+        transform: scaleX(0);
+        animation: fillBar 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      }
+
+      @keyframes fillBar {
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      .bar-1 .competency-fill {
+        width: 97%;
+        animation-delay: 0.2s;
+      }
+      .bar-2 .competency-fill {
+        width: 95%;
+        animation-delay: 0.35s;
+      }
+      .bar-3 .competency-fill {
+        width: 91%;
+        animation-delay: 0.5s;
+      }
+      .bar-4 .competency-fill {
+        width: 88%;
+        animation-delay: 0.65s;
+      }
+      .bar-5 .competency-fill {
+        width: 85%;
+        animation-delay: 0.8s;
+      }
+      .bar-6 .competency-fill {
+        width: 82%;
+        animation-delay: 0.95s;
+      }
+
+      .model-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 24px 0;
+      }
+
+      .model-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        margin-top: 4px;
+      }
+
+      .stat-cell {
+        background: var(--bg);
+        padding: 16px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        display: block;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+
+      .stat-label {
+        font-family: var(--mono);
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--dim);
+      }
+
+      /* ── SECTION SHELL ── */
+      section {
+        border-top: 1px solid var(--border);
+      }
+
+      .section-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 100px 80px;
+      }
+
+      .section-tag {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 16px;
+      }
+
+      .section-heading {
+        font-family: var(--serif);
+        font-size: clamp(32px, 4vw, 52px);
+        line-height: 1.1;
+        margin-bottom: 48px;
+        max-width: 640px;
+      }
+
+      .section-heading em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      /* ── ALIGNMENT GRID ── */
+      .alignment-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+      }
+
+      .alignment-card {
+        background: var(--bg);
+        padding: 40px;
+        position: relative;
+        transition: background 0.3s;
+      }
+
+      .alignment-card:hover {
+        background: var(--surface);
+      }
+
+      .alignment-card::before {
+        content: attr(data-num);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        color: var(--dim);
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+
+      .alignment-jd {
+        font-family: var(--mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex-shrink: 0;
+      }
+
+      .alignment-card h3 {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+
+      .alignment-card p {
+        font-size: 14px;
+        color: rgba(242, 242, 240, 0.6);
+        line-height: 1.7;
+      }
+
+      .alignment-card p strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* ── EVIDENCE TIMELINE ── */
+      .timeline {
+        position: relative;
+        padding-left: 32px;
+      }
+
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 8px;
+        bottom: 0;
+        width: 1px;
+        background: var(--border);
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-bottom: 52px;
+      }
+
+      .timeline-item:last-child {
+        padding-bottom: 0;
+      }
+
+      .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -36px;
+        top: 8px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        border: 1px solid var(--accent);
+        background: var(--bg);
+      }
+
+      .timeline-meta {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .timeline-org {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+
+      .timeline-role {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 16px;
+        letter-spacing: 0.03em;
+      }
+
+      .timeline-points {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .timeline-points li {
+        font-size: 14px;
+        color: rgba(242, 242, 240, 0.65);
+        line-height: 1.6;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .timeline-points li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 12px;
+      }
+
+      .timeline-points li strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* ── 12-MONTH PLAN ── */
+      .plan-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        margin-bottom: 48px;
+      }
+
+      .plan-phase {
+        background: var(--bg);
+        padding: 32px 28px;
+        transition: background 0.3s;
+      }
+
+      .plan-phase:hover {
+        background: var(--surface);
+      }
+
+      .plan-phase-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+
+      .plan-phase h4 {
+        font-size: 15px;
+        font-weight: 500;
+        margin-bottom: 16px;
+        line-height: 1.35;
+      }
+
+      .plan-phase ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .plan-phase ul li {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.5;
+        padding-left: 14px;
+        position: relative;
+      }
+
+      .plan-phase ul li::before {
+        content: '—';
+        position: absolute;
+        left: 0;
+        color: var(--dim);
+      }
+
+      /* ── SYSTEMS BUILT ── */
+      .systems-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+      }
+
+      .system-card {
+        background: var(--bg);
+        padding: 36px;
+        transition: background 0.3s;
+      }
+
+      .system-card:hover {
+        background: var(--surface);
+      }
+
+      .system-badge {
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dim);
+        border: 1px solid var(--border);
+        display: inline-block;
+        padding: 3px 8px;
+        margin-bottom: 16px;
+      }
+
+      .system-badge.live {
+        color: var(--accent);
+        border-color: rgba(16, 163, 127, 0.3);
+      }
+
+      .system-card h3 {
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+
+      .system-card p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .system-card p strong {
+        color: rgba(242, 242, 240, 0.8);
+        font-weight: 500;
+      }
+
+      /* ── PHILOSOPHY ── */
+      .philosophy-block {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: start;
+      }
+
+      .philosophy-quote {
+        font-family: var(--serif);
+        font-size: clamp(22px, 2.5vw, 32px);
+        font-style: italic;
+        line-height: 1.45;
+        color: rgba(242, 242, 240, 0.85);
+        border-left: 2px solid var(--accent);
+        padding-left: 28px;
+      }
+
+      .philosophy-body p {
+        font-size: 15px;
+        color: rgba(242, 242, 240, 0.6);
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+
+      .philosophy-body p strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* ── CONTACT ── */
+      .contact-section {
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+      }
+
+      .contact-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 100px 80px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+
+      .contact-heading {
+        font-family: var(--serif);
+        font-size: clamp(36px, 4vw, 56px);
+        line-height: 1.1;
+        margin-bottom: 20px;
+      }
+
+      .contact-heading em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .contact-sub {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.7;
+        margin-bottom: 36px;
+      }
+
+      .contact-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border: 1px solid var(--border);
+      }
+
+      .contact-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 28px;
+        border-bottom: 1px solid var(--border);
+        text-decoration: none;
+        transition: background 0.2s;
+        cursor: pointer;
+      }
+
+      .contact-link:last-child {
+        border-bottom: none;
+      }
+      .contact-link:hover {
+        background: var(--accent-dim);
+      }
+
+      .contact-link-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .contact-link-value {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text);
+      }
+
+      .contact-link-arrow {
+        font-size: 16px;
+        color: var(--accent);
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 24px 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      footer p {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        color: var(--dim);
+      }
+
+      footer p span {
+        color: var(--accent);
+      }
+
+      /* ── SCROLL ANIMATIONS ── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+          transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ── CURSOR GLOW ── */
+      .cursor-glow {
+        position: fixed;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(16, 163, 127, 0.04) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.3s;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 900px) {
+        header {
+          padding: 16px 24px;
+        }
+        .header-nav {
+          display: none;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          min-height: auto;
+        }
+        .hero-left {
+          padding: 60px 32px 48px;
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .hero-right {
+          padding: 48px 32px 60px;
+        }
+        .section-inner {
+          padding: 64px 32px;
+        }
+        .alignment-grid {
+          grid-template-columns: 1fr;
+        }
+        .plan-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .systems-grid {
+          grid-template-columns: 1fr;
+        }
+        .philosophy-block {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .contact-inner {
+          grid-template-columns: 1fr;
+          gap: 48px;
+        }
+        footer {
+          padding: 24px 32px;
+          flex-direction: column;
+          gap: 8px;
+          text-align: center;
+        }
+        .model-stats {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .plan-grid {
+          grid-template-columns: 1fr;
+        }
+        .model-stats {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-brand">
+        <svg class="openai-mark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.032.067L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.677l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"
+          />
+        </svg>
+        <span class="header-label">Application · Learning Systems Engineer</span>
+      </div>
+      <nav class="header-nav">
+        <a href="#alignment">Alignment</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#systems">Systems</a>
+        <a href="#plan">First 12</a>
+        <a href="#contact">Connect</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" style="border-top: none">
+      <div class="hero-left">
+        <div class="hero-eyebrow">Candidate · Learning Systems Engineer</div>
+        <h1 class="hero-name">Garth<br /><em>Puckerin</em></h1>
+        <div class="hero-role">
+          AI-Native Learning Systems Architect &nbsp;·&nbsp; 10+ yrs Enterprise L&D
+        </div>
+        <p class="hero-statement">
+          I've spent a decade
+          <strong>translating pedagogical goals into production systems</strong> — learner models,
+          adaptive feedback loops, LMS integrations, and analytics pipelines. Now I'm building the
+          infrastructure layer that makes AI learning not just possible, but
+          <strong>measurable</strong>.
+        </p>
+        <div class="cta-row">
+          <a href="mailto:garth.puckerin@gmail.com" class="btn-primary">
+            ↗ &nbsp; Open Conversation
+          </a>
+          <a href="https://linkedin.com/in/garthpuckerin" target="_blank" class="btn-ghost">
+            LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="model-header">
+          <span>LEARNER_MODEL v2.1</span>
+          <span>candidate_id: GP-2025</span>
+        </div>
+
+        <div class="model-title">Core Competency Assessment</div>
+
+        <div class="competency-block bar-1">
+          <div class="competency-label">
+            LMS Architecture & Integration
+            <span>ADVANCED · 10yr</span>
+          </div>
+          <div class="competency-bar"><div class="competency-fill"></div></div>
+        </div>
+
+        <div class="competency-block bar-2">
+          <div class="competency-label">
+            AI-Native System Design
+            <span>ADVANCED · 4yr</span>
+          </div>
+          <div class="competency-bar"><div class="competency-fill"></div></div>
+        </div>
+
+        <div class="competency-block bar-3">
+          <div class="competency-label">
+            Learning Analytics & Data Pipelines
+            <span>PROFICIENT · 7yr</span>
+          </div>
+          <div class="competency-bar"><div class="competency-fill"></div></div>
+        </div>
+
+        <div class="competency-block bar-4">
+          <div class="competency-label">
+            Adaptive Learning Infrastructure
+            <span>PROFICIENT · 5yr</span>
+          </div>
+          <div class="competency-bar"><div class="competency-fill"></div></div>
+        </div>
+
+        <div class="competency-block bar-5">
+          <div class="competency-label">
+            Instructional Design / Learning Science
+            <span>PROFICIENT · 8yr</span>
+          </div>
+          <div class="competency-bar"><div class="competency-fill"></div></div>
+        </div>
+
+        <div class="competency-block bar-6">
+          <div class="competency-label">
+            Non-Technical Educator Tooling
+            <span>PROFICIENT · 6yr</span>
+          </div>
+          <div class="competency-bar"><div class="competency-fill"></div></div>
+        </div>
+
+        <div class="model-divider"></div>
+
+        <div class="model-stats">
+          <div class="stat-cell">
+            <span class="stat-value">25K+</span>
+            <span class="stat-label">Learners Supported</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-value">8</span>
+            <span class="stat-label">Enterprise Orgs</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-value">4</span>
+            <span class="stat-label">LMS Platforms</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALIGNMENT -->
+    <section id="alignment">
+      <div class="section-inner">
+        <div class="section-tag">Role Alignment</div>
+        <h2 class="section-heading">Every requirement<br />has <em>evidence</em> behind it.</h2>
+
+        <div class="alignment-grid">
+          <div class="alignment-card reveal" data-num="01">
+            <div class="alignment-jd">
+              <div class="dot"></div>
+              JD: "Build AI-Native Learning Infrastructure"
+            </div>
+            <h3>I'm already building it.</h3>
+            <p>
+              Developed <strong>Connex</strong> — an AI integration platform connecting LMS, HRIS,
+              CRM, and ERP — currently in a <strong>live credit union proof-of-concept</strong> with
+              Axonify, UKG, LinkedIn Learning, and Docebo. FastAPI, PostgreSQL, Redis, Celery. This
+              is the architecture the JD describes.
+            </p>
+          </div>
+
+          <div class="alignment-card reveal" data-num="02">
+            <div class="alignment-jd">
+              <div class="dot"></div>
+              JD: "Enable Adaptive Learning"
+            </div>
+            <h3>Adaptive is how I think about systems.</h3>
+            <p>
+              Built learner-state tracking and progress analytics across Axonify and Docebo
+              deployments. Developed <strong>custom xAPI/SCORM bridge layers</strong> that feed
+              learning events into data warehouses for real-time path adjustment. Adaptive isn't a
+              feature I add — it's a constraint I design around.
+            </p>
+          </div>
+
+          <div class="alignment-card reveal" data-num="03">
+            <div class="alignment-jd">
+              <div class="dot"></div>
+              JD: "Design Data Systems for Insights"
+            </div>
+            <h3>I've run the full analytics stack.</h3>
+            <p>
+              Led learning analytics pipeline design at
+              <strong>Montefiore Health System</strong> (Epic Go-Live, 25K+ users, 7 locations, 120+
+              instructors) — tracking completion, competency gaps, and real-time readiness scores
+              across a clinical workforce. Data as mission-critical infrastructure.
+            </p>
+          </div>
+
+          <div class="alignment-card reveal" data-num="04">
+            <div class="alignment-jd">
+              <div class="dot"></div>
+              JD: "Empower Educators"
+            </div>
+            <h3>Low-code tools for high-context humans.</h3>
+            <p>
+              Designed <strong>no-code curriculum configuration interfaces</strong> at Success
+              Academy and Boehringer Ingelheim — allowing instructional designers to build, test,
+              and deploy learning paths without engineering tickets.
+              <strong>Reducing the distance between pedagogical intent and production</strong> is
+              what I do.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVIDENCE -->
+    <section id="evidence">
+      <div class="section-inner">
+        <div class="section-tag">Experience Evidence</div>
+        <h2 class="section-heading">The work that<br /><em>built</em> this perspective.</h2>
+
+        <div class="timeline">
+          <div class="timeline-item reveal">
+            <div class="timeline-meta">2024 – Present</div>
+            <div class="timeline-org">Citadel Credit Union</div>
+            <div class="timeline-role">Learning & Development Specialist (Contract)</div>
+            <ul class="timeline-points">
+              <li>
+                Architecting <strong>Connex integration layer</strong> connecting Axonify LMS, UKG
+                HRIS, LinkedIn Learning, and Docebo — live proof-of-concept with event routing,
+                learner sync, and completion pipelines
+              </li>
+              <li>
+                Designing adaptive content pathways mapped to
+                <strong>regulatory compliance competency frameworks</strong>
+              </li>
+              <li>
+                Building educator-facing configuration tools that enable non-technical L&D staff to
+                modify learning paths without engineering support
+              </li>
+            </ul>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-meta">2022 – 2024</div>
+            <div class="timeline-org">Federal Home Loan Bank of Chicago</div>
+            <div class="timeline-role">Learning Management & Integration Consultant</div>
+            <ul class="timeline-points">
+              <li>
+                Led <strong>LMS platform migration and API integration</strong> across enterprise HR
+                and compliance systems
+              </li>
+              <li>
+                Built reporting dashboards surfacing completion rates, competency coverage, and
+                learner engagement for executive stakeholders
+              </li>
+              <li>
+                Designed data models for
+                <strong>credential tracking and certification workflows</strong> mapped to
+                regulatory requirements
+              </li>
+            </ul>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-meta">2018 – 2022</div>
+            <div class="timeline-org">Montefiore Health System</div>
+            <div class="timeline-role">Learning Systems Lead</div>
+            <ul class="timeline-points">
+              <li>
+                Spearheaded <strong>Epic EHR Go-Live training infrastructure</strong> — 25,000+
+                users across 7 locations, 120+ instructors coordinated through a custom LMS
+                orchestration layer
+              </li>
+              <li>
+                Built real-time <strong>learner readiness scoring models</strong> to flag at-risk
+                staff before go-live cutover
+              </li>
+              <li>
+                Designed and deployed formative assessment pipelines that reduced critical errors in
+                clinical workflow training by measurable margins
+              </li>
+            </ul>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-meta">2012 – 2018</div>
+            <div class="timeline-org">
+              American Express · Boehringer Ingelheim · Success Academy
+            </div>
+            <div class="timeline-role">L&D Systems & Instructional Technology</div>
+            <ul class="timeline-points">
+              <li>
+                Began at <strong>American Express</strong> in regulatory compliance training — first
+                enterprise LMS experience, building systems that had zero tolerance for knowledge
+                gaps
+              </li>
+              <li>
+                At <strong>Boehringer Ingelheim</strong>: global learning systems for clinical and
+                pharmaceutical workforce, including multi-language content pipeline and assessment
+                analytics
+              </li>
+              <li>
+                At <strong>Success Academy</strong>: designed educator-facing curriculum tooling for
+                a high-accountability K-12 network — measuring learning outcomes at the classroom
+                level
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SYSTEMS BUILT -->
+    <section id="systems">
+      <div class="section-inner">
+        <div class="section-tag">Systems Built</div>
+        <h2 class="section-heading">
+          I don't just describe<br />infrastructure — I <em>ship</em> it.
+        </h2>
+
+        <div class="systems-grid">
+          <div class="system-card reveal">
+            <div class="system-badge live">● Live POC</div>
+            <h3>Connex / Aether</h3>
+            <p>
+              Enterprise AI integration platform.
+              <strong>FastAPI + PostgreSQL + Redis + Celery</strong>. Event-driven architecture
+              routing learner data between LMS, HRIS, CRM, and ERP. Built as a Docker Compose stack
+              with a live credit union deployment. Direct analog to the "AI nervous system"
+              described in the JD.
+            </p>
+          </div>
+
+          <div class="system-card reveal">
+            <div class="system-badge">Active Development</div>
+            <h3>Mimir²</h3>
+            <p>
+              AI memory and knowledge management system. Surfaces contextual knowledge across
+              <strong>40+ GitHub repositories</strong> — a personal implementation of the learner
+              model concept applied to developer context. Semantic retrieval, state persistence,
+              cross-session continuity.
+            </p>
+          </div>
+
+          <div class="system-card reveal">
+            <div class="system-badge">Active Development</div>
+            <h3>PipelineOS</h3>
+            <p>
+              Agent orchestration platform with
+              <strong>ticket-based work contracts and authority levels</strong>. Strict separation
+              between decision-making and execution. Maps directly to the adaptive feedback loop
+              architecture described in the role — agents as learner model components.
+            </p>
+          </div>
+
+          <div class="system-card reveal">
+            <div class="system-badge">Shipped</div>
+            <h3>xAPI / SCORM Bridge Layer</h3>
+            <p>
+              Custom-built bridge translating SCORM 1.2/2004 completion events to
+              <strong>xAPI statements</strong> with enriched learner context — enabling LRS
+              ingestion for analytics pipelines. Deployed across Axonify and Docebo environments at
+              Citadel.
+            </p>
+          </div>
+
+          <div class="system-card reveal">
+            <div class="system-badge">Shipped</div>
+            <h3>Learner Readiness Model</h3>
+            <p>
+              Real-time <strong>competency gap scoring</strong> built for the Montefiore Epic
+              Go-Live. Ingested formative assessment results, mapped against clinical workflow
+              requirements, surfaced at-risk learner flags to 120+ instructors before cutover.
+              <strong>25K+ users tracked.</strong>
+            </p>
+          </div>
+
+          <div class="system-card reveal">
+            <div class="system-badge">Active Development</div>
+            <h3>Agent-Core Scaffold</h3>
+            <p>
+              Python/FastAPI agentic gateway with
+              <strong
+                >SQLite memory store, plugin skill registry, and multi-channel dispatch</strong
+              >
+              (Telegram, terminal). The infrastructure pattern behind PipelineOS — modular,
+              testable, designed for AI-augmented learning workflow integration.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 MONTH PLAN -->
+    <section id="plan">
+      <div class="section-inner">
+        <div class="section-tag">30 · 60 · 90 · 365</div>
+        <h2 class="section-heading">
+          What <em>success looks like</em><br />in the first 12 months.
+        </h2>
+
+        <div class="plan-grid">
+          <div class="plan-phase reveal">
+            <div class="plan-phase-label">Month 1–3</div>
+            <h4>Map the Terrain</h4>
+            <ul>
+              <li>Audit existing learner data models and pipeline gaps</li>
+              <li>Embed with educators and researchers to understand pedagogical constraints</li>
+              <li>Ship first learner progress API endpoint to production</li>
+              <li>Identify quick wins in formative assessment tracking</li>
+            </ul>
+          </div>
+
+          <div class="plan-phase reveal">
+            <div class="plan-phase-label">Month 3–6</div>
+            <h4>Build the Foundation</h4>
+            <ul>
+              <li>Launch core adaptive feedback loop infrastructure</li>
+              <li>Instrument learning events with granular xAPI-level telemetry</li>
+              <li>Build educator-facing configuration layer — no-ticket curriculum tools</li>
+              <li>Validate analytics pipeline with first real cohort data</li>
+            </ul>
+          </div>
+
+          <div class="plan-phase reveal">
+            <div class="plan-phase-label">Month 6–9</div>
+            <h4>Scale & Measure</h4>
+            <ul>
+              <li>Reach broad learner cohort with new AI learning experiences</li>
+              <li>Implement learner model state persistence across sessions</li>
+              <li>Surface insight dashboards for educators and researchers</li>
+              <li>Define competency outcome metrics that go beyond completion</li>
+            </ul>
+          </div>
+
+          <div class="plan-phase reveal">
+            <div class="plan-phase-label">Month 9–12</div>
+            <h4>Compound & Iterate</h4>
+            <ul>
+              <li>Close the loop: analytics → adaptive path adjustment → re-measure</li>
+              <li>Enable education teams to build and iterate without engineering</li>
+              <li>Publish internal learnings on AI-native assessment infrastructure</li>
+              <li>Define the v2 roadmap based on validated outcome data</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHILOSOPHY -->
+    <section>
+      <div class="section-inner">
+        <div class="philosophy-block">
+          <div class="philosophy-quote reveal">
+            "Learning is only measurable if the system was designed to measure it from the start."
+          </div>
+          <div class="philosophy-body reveal">
+            <p>
+              Most LMS deployments treat analytics as a reporting afterthought — you get completion
+              percentages and time-on-task, maybe a quiz score.
+              <strong>That's not a learner model. That's a receipt.</strong>
+            </p>
+            <p>
+              What I've been building toward — through Montefiore, through Citadel, through Connex —
+              is infrastructure that captures the <em>shape</em> of learning: where people get
+              stuck, what scaffolding they reach for, when confidence diverges from competence.
+            </p>
+            <p>
+              OpenAI's Education team is building this at a scale and with a model capability that
+              changes what's possible.
+              <strong>I want to build the plumbing that makes it real.</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <div class="contact-section" id="contact">
+      <div class="contact-inner">
+        <div>
+          <div class="section-tag">Let's Talk</div>
+          <h2 class="contact-heading">
+            Ready to build<br />the <em>infrastructure</em><br />for learning at scale.
+          </h2>
+          <p class="contact-sub">
+            I'd welcome a conversation about the Learning Systems Engineer role and how my work
+            translates to what OpenAI's Education team is building.
+          </p>
+          <a
+            href="mailto:garth.puckerin@gmail.com"
+            class="btn-primary"
+            style="display: inline-flex"
+          >
+            ↗ &nbsp; garth.puckerin@gmail.com
+          </a>
+        </div>
+
+        <div class="contact-links">
+          <a class="contact-link" href="mailto:garth.puckerin@gmail.com">
+            <span class="contact-link-label">Email</span>
+            <span class="contact-link-value">garth.puckerin@gmail.com</span>
+            <span class="contact-link-arrow">↗</span>
+          </a>
+          <a class="contact-link" href="https://linkedin.com/in/garthpuckerin" target="_blank">
+            <span class="contact-link-label">LinkedIn</span>
+            <span class="contact-link-value">linkedin.com/in/garthpuckerin</span>
+            <span class="contact-link-arrow">↗</span>
+          </a>
+          <div class="contact-link" style="cursor: default">
+            <span class="contact-link-label">Location</span>
+            <span class="contact-link-value">East Stroudsburg, PA · Open to Remote</span>
+            <span class="contact-link-arrow" style="color: var(--dim)">—</span>
+          </div>
+          <div class="contact-link" style="cursor: default">
+            <span class="contact-link-label">Availability</span>
+            <span class="contact-link-value">Immediate · Actively interviewing</span>
+            <span class="contact-link-arrow" style="color: var(--dim)">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>
+        Garth Puckerin &nbsp;·&nbsp; Application for
+        <span>Learning Systems Engineer</span> &nbsp;·&nbsp; OpenAI Education Team
+      </p>
+      <p>Built with intentionality. <span>Every application is a design decision.</span></p>
+    </footer>
+
+    <script>
+      // Cursor glow
+      const glow = document.getElementById('cursorGlow');
+      document.addEventListener('mousemove', (e) => {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+      });
+
+      // Scroll reveal
+      const reveals = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+              setTimeout(() => {
+                entry.target.classList.add('visible');
+              }, 80);
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      reveals.forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>
